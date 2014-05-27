@@ -1,12 +1,12 @@
-function []=main()
+function [BasicImageStatistics,ElaboratedImageStatistics]=main()
 close all
 RawData=imread('images\(3680- 20 cm GRID1) -165 normal by GRID profile.tif');
 figure(1)
 imagesc(RawData); colormap('gray')
-[BasicImage]=CropData(RawData);
-ElaboratedImage=TestAlgorithm(BasicImage);
+[BasicImage,BasicImageStatistics]=CropData(RawData);
+[ElaboratedImage,ElaboratedImageStatistics]=TestAlgorithm(BasicImage);
 
-function [BasicImage,minX,maxX,minY,maxY]=CropData(RawData)
+function [BasicImage,statistics]=CropData(RawData)
 temp=round(ginput());
 minX=min(temp(:,1));
 maxX=max(temp(:,1));
@@ -15,10 +15,11 @@ maxY=max(temp(:,2));
 xlim([minX maxX]); ylim([minY,maxY])
 NonScaledNewImage=RawData(minY:maxY,minX:maxX);
 BasicImage=(NonScaledNewImage-min(min(NonScaledNewImage)))/max(max(NonScaledNewImage-min(min(NonScaledNewImage))));
+statistics=FindStatistics(BasicImage);
 figure
 imagesc(BasicImage); colormap('gray')
 
-function ElaboratedImage=TestAlgorithm(BasicImage)
+function [ElaboratedImage,statistics]=TestAlgorithm(BasicImage)
 
 SumofColumns=sum(BasicImage,1)/size(BasicImage,2);
 ElaboratedImage=BasicImage./(ones(size(BasicImage,1),1)*SumofColumns); % Equal the sum of all image columns
@@ -33,6 +34,16 @@ if VerifyFlag
 else
     warning('That wasnt the idea')
 end
+statistics=FindStatistics(ElaboratedImage);
+
+function statistics=FindStatistics(Image)
+if isempty(Image)
+    statistics=[];
+    return
+end
+statistics(1)=mean(Image(:));
+statistics(2)=std(Image(:));
+statistics(3)=statistics(2)/statistics(1);
 
 % ProfileAnalysisFlag=0;
 % if ProfileAnalysisFlag 
