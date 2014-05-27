@@ -21,14 +21,14 @@ imagesc(BasicImage); colormap('gray')
 function ElaboratedImage=TestAlgorithm(BasicImage)
 
 SumofColumns=sum(BasicImage,1)/size(BasicImage,2);
-RuvenProposedImage=BasicImage./(ones(size(BasicImage,1),1)*SumofColumns); % Equal the sum of all image columns
-VerifyFlag=max(abs(sum(RuvenProposedImage,1)/(size(BasicImage,2))-1))<1e-3;
+ElaboratedImage=BasicImage./(ones(size(BasicImage,1),1)*SumofColumns); % Equal the sum of all image columns
+VerifyFlag=max(abs(sum(ElaboratedImage,1)/(size(BasicImage,2))-1))<1e-3;
 if VerifyFlag
     subplot(1,2,1)
     imagesc(BasicImage); colormap('gray')
     title('Basic Image')
     subplot(1,2,2)
-    imagesc(RuvenProposedImage); colormap('gray')
+    imagesc(ElaboratedImage); colormap('gray')
     title('Proposed Algorithm')
 else
     warning('That wasnt the idea')
