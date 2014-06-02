@@ -4,8 +4,8 @@ RawData=imread('images\(3680- 20 cm GRID1) -165 normal by GRID profile.tif');
 figure(1)
 imagesc(RawData); colormap('gray')
 [BasicImage,BasicImageStatistics]=CropData(RawData);
-AverageOverXRows=39;
-AverageOverXColumns=39;
+AverageOverXRows=9;
+AverageOverXColumns=9;
 RowsMargin=floor(AverageOverXRows/2);
 ElaboratedImage1=BasicImage;
 for row=RowsMargin+1:size(BasicImage,1)-RowsMargin
