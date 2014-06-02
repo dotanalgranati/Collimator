@@ -4,28 +4,12 @@ RawData=imread('images\(3680- 20 cm GRID1) -165 normal by GRID profile.tif');
 figure(1)
 imagesc(RawData); colormap('gray')
 [BasicImage,BasicImageStatistics]=CropData(RawData);
-[ElaboratedImage,ElaboratedImageStatistics]=TestAlgorithm(BasicImage);
-g=3;
+[ElaboratedImage1]=AverageOnColumns(BasicImage);
+[ElaboratedImage2]=AverageOnRows(ElaboratedImage1);
 
-function [BasicImage,statistics]=CropData(RawData)
-temp=round(ginput());
-minX=min(temp(:,1));
-maxX=max(temp(:,1));
-minY=min(temp(:,2));
-maxY=max(temp(:,2));
-xlim([minX maxX]); ylim([minY,maxY])
-NonScaledNewImage=RawData(minY:maxY,minX:maxX);
-BasicImage=(NonScaledNewImage-min(min(NonScaledNewImage)))/max(max(NonScaledNewImage-min(min(NonScaledNewImage))));
-statistics=FindStatistics(BasicImage);
-figure
-imagesc(BasicImage); colormap('gray')
 
-function [ElaboratedImage1,statistics]=TestAlgorithm(BasicImage)
 
-SumofColumns=sum(BasicImage,1)/size(BasicImage,2);
-ElaboratedImage1=BasicImage./(ones(size(BasicImage,1),1)*SumofColumns); % Equal the sum of all image columns
-SumofRows=sum(ElaboratedImage1,2)/size(ElaboratedImage1,1);
-ElaboratedImage2=ElaboratedImage1./(SumofRows*ones(1,size(ElaboratedImage1,2))); % Equal the sum of all image columns
+ElaboratedImageStatistics=FindStatistics(ElaboratedImage2);
 
 VerifyFlag=max(abs(sum(ElaboratedImage1,1)/(size(BasicImage,2))-1))<1e-3;
 if VerifyFlag
@@ -41,7 +25,30 @@ if VerifyFlag
 else
     warning('That wasnt the idea')
 end
-statistics=FindStatistics(ElaboratedImage1);
+
+g=3;
+
+function [BasicImage,statistics]=CropData(RawData)
+temp=round(ginput());
+minX=min(temp(:,1));
+maxX=max(temp(:,1));
+minY=min(temp(:,2));
+maxY=max(temp(:,2));
+xlim([minX maxX]); ylim([minY,maxY])
+NonScaledNewImage=RawData(minY:maxY,minX:maxX);
+BasicImage=(NonScaledNewImage-min(min(NonScaledNewImage)))/max(max(NonScaledNewImage-min(min(NonScaledNewImage))));
+statistics=FindStatistics(BasicImage);
+figure
+imagesc(BasicImage); colormap('gray')
+
+function [ElaboratedImage]=AverageOnColumns(BasicImage)
+
+SumofColumns=sum(BasicImage,1)/size(BasicImage,2);
+ElaboratedImage=BasicImage./(ones(size(BasicImage,1),1)*SumofColumns); % Equal the sum of all image columns
+
+function [ElaboratedImage]=AverageOnRows(BasicImage)
+SumofRows=sum(BasicImage,2)/size(BasicImage,1);
+ElaboratedImage=BasicImage./(SumofRows*ones(1,size(BasicImage,2))); % Equal the sum of all image columns
 
 function statistics=FindStatistics(Image)
 if isempty(Image)

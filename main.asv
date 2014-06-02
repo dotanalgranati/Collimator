@@ -4,7 +4,7 @@ RawData=imread('images\(3680- 20 cm GRID1) -165 normal by GRID profile.tif');
 figure(1)
 imagesc(RawData); colormap('gray')
 [BasicImage,BasicImageStatistics]=CropData(RawData);
-[ElaboratedImage,ElaboratedImageStatistics]=TestAlgorithm(BasicImage);
+[ElaboratedImage,ElaboratedImageStatistics]=AverageOn(BasicImage);
 g=3;
 
 function [BasicImage,statistics]=CropData(RawData)
@@ -25,7 +25,7 @@ function [ElaboratedImage1,statistics]=TestAlgorithm(BasicImage)
 SumofColumns=sum(BasicImage,1)/size(BasicImage,2);
 ElaboratedImage1=BasicImage./(ones(size(BasicImage,1),1)*SumofColumns); % Equal the sum of all image columns
 SumofRows=sum(ElaboratedImage1,2)/size(ElaboratedImage1,1);
-ElaboratedImage2=ElaboratedImage1./(ones(1,size(ElaboratedImage1,2))*SumofRows); % Equal the sum of all image columns
+ElaboratedImage2=ElaboratedImage1./(SumofRows*ones(1,size(ElaboratedImage1,2))); % Equal the sum of all image columns
 
 VerifyFlag=max(abs(sum(ElaboratedImage1,1)/(size(BasicImage,2))-1))<1e-3;
 if VerifyFlag
