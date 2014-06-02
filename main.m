@@ -5,6 +5,7 @@ figure(1)
 imagesc(RawData); colormap('gray')
 [BasicImage,BasicImageStatistics]=CropData(RawData);
 [ElaboratedImage,ElaboratedImageStatistics]=TestAlgorithm(BasicImage);
+g=3;
 
 function [BasicImage,statistics]=CropData(RawData)
 temp=round(ginput());
@@ -19,22 +20,28 @@ statistics=FindStatistics(BasicImage);
 figure
 imagesc(BasicImage); colormap('gray')
 
-function [ElaboratedImage,statistics]=TestAlgorithm(BasicImage)
+function [ElaboratedImage1,statistics]=TestAlgorithm(BasicImage)
 
 SumofColumns=sum(BasicImage,1)/size(BasicImage,2);
-ElaboratedImage=BasicImage./(ones(size(BasicImage,1),1)*SumofColumns); % Equal the sum of all image columns
-VerifyFlag=max(abs(sum(ElaboratedImage,1)/(size(BasicImage,2))-1))<1e-3;
+ElaboratedImage1=BasicImage./(ones(size(BasicImage,1),1)*SumofColumns); % Equal the sum of all image columns
+SumofRows=sum(ElaboratedImage1,2)/size(ElaboratedImage1,1);
+ElaboratedImage2=ElaboratedImage1./(SumofRows*ones(1,size(ElaboratedImage1,2))); % Equal the sum of all image columns
+
+VerifyFlag=max(abs(sum(ElaboratedImage1,1)/(size(BasicImage,2))-1))<1e-3;
 if VerifyFlag
-    subplot(1,2,1)
+    subplot(1,3,1)
     imagesc(BasicImage); colormap('gray')
     title('Basic Image')
-    subplot(1,2,2)
-    imagesc(ElaboratedImage); colormap('gray')
-    title('Proposed Algorithm')
+    subplot(1,3,2)
+    imagesc(ElaboratedImage1); colormap('gray')
+    title('Proposed Algorithm on Columns')
+    subplot(1,3,3)
+    imagesc(ElaboratedImage2); colormap('gray')
+    title('Proposed Algorithm on Columns and Rows')
 else
     warning('That wasnt the idea')
 end
-statistics=FindStatistics(ElaboratedImage);
+statistics=FindStatistics(ElaboratedImage1);
 
 function statistics=FindStatistics(Image)
 if isempty(Image)
