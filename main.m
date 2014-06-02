@@ -4,27 +4,12 @@ RawData=imread('images\(3680- 20 cm GRID1) -165 normal by GRID profile.tif');
 figure(1)
 imagesc(RawData); colormap('gray')
 [BasicImage,BasicImageStatistics]=CropData(RawData);
-[ElaboratedImage1]=AverageOnColumns(BasicImage);
-[ElaboratedImage2]=AverageOnRows(ElaboratedImage1);
 
-
-
+[ElaboratedImage1,success_flag1]=AverageOnColumns(BasicImage);
+[ElaboratedImage2,success_flag2]=AverageOnRows(ElaboratedImage1);
 ElaboratedImageStatistics=FindStatistics(ElaboratedImage2);
+PlotResults(BasicImage,ElaboratedImage1,ElaboratedImage2);
 
-VerifyFlag=max(abs(sum(ElaboratedImage1,1)/(size(BasicImage,2))-1))<1e-3;
-if VerifyFlag
-    subplot(1,3,1)
-    imagesc(BasicImage); colormap('gray')
-    title('Basic Image')
-    subplot(1,3,2)
-    imagesc(ElaboratedImage1); colormap('gray')
-    title('Proposed Algorithm on Columns')
-    subplot(1,3,3)
-    imagesc(ElaboratedImage2); colormap('gray')
-    title('Proposed Algorithm on Columns and Rows')
-else
-    warning('That wasnt the idea')
-end
 
 g=3;
 
@@ -41,14 +26,16 @@ statistics=FindStatistics(BasicImage);
 figure
 imagesc(BasicImage); colormap('gray')
 
-function [ElaboratedImage]=AverageOnColumns(BasicImage)
+function [ElaboratedImage,VerifyFlag]=AverageOnColumns(BasicImage)
 
 SumofColumns=sum(BasicImage,1)/size(BasicImage,2);
 ElaboratedImage=BasicImage./(ones(size(BasicImage,1),1)*SumofColumns); % Equal the sum of all image columns
+VerifyFlag=max(abs(sum(ElaboratedImage,1)/(size(BasicImage,2))-1))<1e-3;
 
-function [ElaboratedImage]=AverageOnRows(BasicImage)
+function [ElaboratedImage,VerifyFlag]=AverageOnRows(BasicImage)
 SumofRows=sum(BasicImage,2)/size(BasicImage,1);
 ElaboratedImage=BasicImage./(SumofRows*ones(1,size(BasicImage,2))); % Equal the sum of all image columns
+VerifyFlag=max(abs(sum(ElaboratedImage,2)/(size(BasicImage,1))-1))<1e-3;
 
 function statistics=FindStatistics(Image)
 if isempty(Image)
@@ -58,6 +45,17 @@ end
 statistics(1)=mean(Image(:));
 statistics(2)=std(Image(:));
 statistics(3)=statistics(2)/statistics(1);
+
+function []=PlotResults(BasicImage,ElaboratedImage1,ElaboratedImage2);
+subplot(1,3,1)
+imagesc(BasicImage); colormap('gray')
+title('Basic Image')
+subplot(1,3,2)
+imagesc(ElaboratedImage1); colormap('gray')
+title('Proposed Algorithm on Columns')
+subplot(1,3,3)
+imagesc(ElaboratedImage2); colormap('gray')
+title('Proposed Algorithm on Columns and Rows')
 
 % ProfileAnalysisFlag=0;
 % if ProfileAnalysisFlag 
