@@ -7,6 +7,26 @@ imagesc(RawData); colormap('gray')
 AverageOverXRows=99;
 AverageOverXColumns=99;
 RowsMargin=floor(AverageOverXRows/2);
+[ElaboratedImage1,ElaboratedImage2,ElaboratedImage3]=SimpleAverage(BasicImage,RowsMargin,AverageOverXRows,AverageOverXColumns);
+ElaboratedImageStatistics=FindStatistics(ElaboratedImage3);
+PlotResults(BasicImage,ElaboratedImage1,ElaboratedImage2,ElaboratedImage3);
+
+%-------------------------------------------------------------------------------------------
+function [BasicImage,statistics]=CropData(RawData)
+temp=round(ginput());
+minX=min(temp(:,1));
+maxX=max(temp(:,1));
+minY=min(temp(:,2));
+maxY=max(temp(:,2));
+xlim([minX maxX]); ylim([minY,maxY])
+NonScaledNewImage=RawData(minY:maxY,minX:maxX);
+BasicImage=(NonScaledNewImage-min(min(NonScaledNewImage)))/max(max(NonScaledNewImage-min(min(NonScaledNewImage))));
+statistics=FindStatistics(BasicImage);
+figure
+imagesc(BasicImage); colormap('gray')
+
+function [ElaboratedImage1,ElaboratedImage2,ElaboratedImage3]=SimpleAverage(BasicImage,RowsMargin,AverageOverXRows,AverageOverXColumns)
+
 ElaboratedImage1=BasicImage;
 for row=RowsMargin+1:size(BasicImage,1)-RowsMargin
     TempImage=AverageOnColumns(BasicImage(row-RowsMargin:row+RowsMargin,:));
@@ -28,25 +48,6 @@ end
 ElaboratedImage1=RemoveMargins(ElaboratedImage1,RowsMargin,0);
 ElaboratedImage2=RemoveMargins(ElaboratedImage2,0,ColumnsMargin);
 ElaboratedImage3=RemoveMargins(ElaboratedImage3,RowsMargin,ColumnsMargin);
-
-ElaboratedImageStatistics=FindStatistics(ElaboratedImage3);
-PlotResults(BasicImage,ElaboratedImage1,ElaboratedImage2,ElaboratedImage3);
-
-
-g=3;
-
-function [BasicImage,statistics]=CropData(RawData)
-temp=round(ginput());
-minX=min(temp(:,1));
-maxX=max(temp(:,1));
-minY=min(temp(:,2));
-maxY=max(temp(:,2));
-xlim([minX maxX]); ylim([minY,maxY])
-NonScaledNewImage=RawData(minY:maxY,minX:maxX);
-BasicImage=(NonScaledNewImage-min(min(NonScaledNewImage)))/max(max(NonScaledNewImage-min(min(NonScaledNewImage))));
-statistics=FindStatistics(BasicImage);
-figure
-imagesc(BasicImage); colormap('gray')
 
 function [ElaboratedImage,VerifyFlag]=AverageOnColumns(BasicImage)
 
