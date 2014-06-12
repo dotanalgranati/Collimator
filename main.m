@@ -8,6 +8,7 @@ AverageOverXRows=99;
 AverageOverXColumns=99;
 RowsMargin=floor(AverageOverXRows/2);
 [ElaboratedImage1,ElaboratedImage2,ElaboratedImage3]=SimpleAverage(BasicImage,RowsMargin,AverageOverXRows,AverageOverXColumns);
+[ElaboratedImage4]=SinCompensation(BasicImage);
 ElaboratedImageStatistics=FindStatistics(ElaboratedImage3);
 PlotResults(BasicImage,ElaboratedImage1,ElaboratedImage2,ElaboratedImage3);
 
@@ -59,6 +60,19 @@ function [ElaboratedImage,VerifyFlag]=AverageOnRows(BasicImage)
 SumofRows=sum(BasicImage,2)/size(BasicImage,2);
 ElaboratedImage=BasicImage./(SumofRows*ones(1,size(BasicImage,2))); % Equal the sum of all image columns
 VerifyFlag=max(abs(sum(ElaboratedImage,2)/(size(BasicImage,1))-1))<1e-3;
+
+function [ElaboratedImage]=SinCompensation(BasicImage)
+
+for row=1:size(BasicImage,1)
+    raw_data=BasicImage(row,:);
+    t=1:length(raw_data);
+    A0=[1,1,0];
+    A=fminsearch(@(A)myfun(A,raw_data),A0);
+end
+
+function [SSE]=myfun(A,raw_data)
+t=1:length(raw_data);
+SSE=sum(((A(1)*sin(2*pi*A(2)*t+A(3)))-raw_data).^2);
 
 function statistics=FindStatistics(Image)
 if isempty(Image)
