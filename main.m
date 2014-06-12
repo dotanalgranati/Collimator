@@ -66,6 +66,13 @@ function [ElaboratedImage]=SinCompensation(BasicImage)
 for row=1:size(BasicImage,1)
     raw_data=BasicImage(row,:);
     t=1:length(raw_data);
+    a=fftshift(fft(raw_data));
+    figure; plot(t,abs(a))
+    figure; plot(t,raw_data); hold all
+    fNorm = (614-939/2)/939;
+    b=0.6+0.2*sin(2*pi*t*fNorm);
+    plot(t,b); hold all
+    [b,a] = butter(10, fNorm, 'stop');    
     A0=[1,1,0];
     A=fminsearch(@(A)myfun(A,raw_data),A0);
 end
